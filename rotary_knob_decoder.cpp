@@ -55,11 +55,9 @@ int RotaryKnobDecoder::getSpeed()
   
   if (interval > 0)
   {
-    speed =  1 / (PULSES_PER_REV * interval); /* Rev per ms */
-    speed *= 1000;                            /* Rev per sec */
-    speed *= 60;                              /* Rev per min (RPM) */
+    speed =  1000.0 / ((float)PULSES_PER_REV * (float)interval); /* Rev per sec (RPS) */
+
     speed = constrain(speed, RPM_LOWER_LIMIT, RPM_UPPER_LIMIT);
-    interval = 0;
   }
   
   return (int)speed;  
@@ -155,6 +153,11 @@ int RotaryKnobDecoder::read()
     interval = millis() - last_change;
     last_change = millis();
   }
+  else 
+  {
+    interval = 0;
+  }
+
   
   return rot_knob_dir;
   
