@@ -18,9 +18,10 @@ RotaryKnobDecoder::RotaryKnobDecoder()
   this->switch_A = 2;
   this->switch_B = 3;
 
+  this->last_change = millis();
+  
   this->rot_knob_dir   = NO_CHANGE;
   this->rot_knob_state = ROT_STATE_A;
-
 }
 
 RotaryKnobDecoder::RotaryKnobDecoder(int switch_A, int switch_B)
@@ -28,11 +29,41 @@ RotaryKnobDecoder::RotaryKnobDecoder(int switch_A, int switch_B)
   this->switch_A = switch_A;
   this->switch_B = switch_B;
   
+  this->last_change = millis();
+  
   this->rot_knob_dir   = NO_CHANGE;
   this->rot_knob_state = ROT_STATE_A;
-
 }
 
+
+/* This function will return the current state of the rotary knob
+ * state machine.
+ */
+
+int RotaryKnobDecoder::getState()
+{
+  return rot_knob_state;  
+}
+
+/* This function will return the rate at which the rotary knob is
+ * being spun.
+ */
+
+int RotaryKnobDecoder::getSpeed()
+{
+  float speed = 0;
+  
+  if (interval > 0)
+  {
+    speed =  1 / (PULSES_PER_REV * interval); /* Rev per ms */
+    speed *= 1000;                            /* Rev per sec */
+    speed *= 60;                              /* Rev per min (RPM) */
+    speed = constrain(speed, RPM_LOWER_LIMIT, RPM_UPPER_LIMIT);
+    interval = 0;
+  }
+  
+  return (int)speed;  
+}
 
 /* This implements a state machine to track the position of a
  * grey coded rotary encoder. The normal state transition flows
@@ -113,6 +144,16 @@ int RotaryKnobDecoder::read()
   {
     rot_knob_dir   = ANTICLOCKWISE;
     rot_knob_state = ROT_STATE_A;
+  }
+  
+  /* If the state changes record the length of time elapsed since
+   * the last state change.
+   */
+  
+  if (rot_knob_dir != NO_CHANGE)
+  {
+    interval = millis() - last_change;
+    last_change = millis();
   }
   
   return rot_knob_dir;

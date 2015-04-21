@@ -25,17 +25,26 @@
 #define ROT_STATE_C 114
 #define ROT_STATE_D 115
 
+#define RPM_LOWER_LIMIT 1.0
+#define RPM_UPPER_LIMIT 100.0
+#define PULSES_PER_REV  48
+
 class RotaryKnobDecoder
 {
 public:
   RotaryKnobDecoder();
   RotaryKnobDecoder(int switch_A, int switch_B);
   
+  int getState();
+  int getSpeed();
   int read();
   
 private:
   int switch_A;
   int switch_B;
+  
+  unsigned long last_change;
+  unsigned long interval;
 
   unsigned int rot_knob_dir;
   unsigned int rot_knob_state;
