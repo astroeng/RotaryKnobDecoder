@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map for RotaryKnobDecoder
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+RotaryKnobDecoder	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getState	KEYWORD2
+getSpeed	KEYWORD2
+read		KEYWORD2
+getButtonState	KEYWORD2
+setLightA	KEYWORD2
+setLightB	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+NOT_USED	LITERAL1
+NO_CHANGE	LITERAL1
+ANTICLOCKWISE	LITERAL1
+CLOCKWISE	LITERAL1
+ROT_STATE_A	LITERAL1
+ROT_STATE_B	LITERAL1
+ROT_STATE_C	LITERAL1
+ROT_STATE_D	LITERAL1
+RPM_LOWER_LIMIT	LITERAL1
+RPM_UPPER_LIMIT	LITERAL1
+PULSES_PER_REV	LITERAL1

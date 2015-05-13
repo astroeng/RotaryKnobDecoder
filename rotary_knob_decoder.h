@@ -7,6 +7,12 @@
  *  Contact [dschacht ( - at - ) gmail ( - dot - ) com] for use questions.
  *************************************************************
  * Initial Code based on a function I wrote in college for a microblaze CPU.
+ *
+ * Updated to use 8 bit data where applicable. This should help with speed on
+ * 8 bit MCUs. The original code was written for a PIC24 which is a 16 bit
+ * device.
+ *
+ * Updated to implement the other functions of the sparkfun 10596 device.
  */
 
 /* Known to work with:
@@ -15,6 +21,8 @@
 
 #ifndef ROTARY_KNOB_DECODER_H
 #define ROTARY_KNOB_DECODER_H
+
+#define NOT_USED 99
 
 #define NO_CHANGE     215
 #define ANTICLOCKWISE 216
@@ -33,21 +41,33 @@ class RotaryKnobDecoder
 {
 public:
   RotaryKnobDecoder();
-  RotaryKnobDecoder(int switch_A, int switch_B);
+  RotaryKnobDecoder(unsigned char switch_A, unsigned char switch_B);
+  RotaryKnobDecoder(unsigned char switch_A, unsigned char switch_B, unsigned char push_button,
+                    unsigned char light_A, unsigned char light_B);
   
-  int getState();
-  int getSpeed();
-  int read();
+  unsigned char getState();
+  unsigned char getSpeed();
+  unsigned char read();
+  
+  unsigned char getButtonState();
+  
+  void setLightA(unsigned char state);
+  void setLightB(unsigned char state);
   
 private:
-  int switch_A;
-  int switch_B;
+  unsigned char switch_A;
+  unsigned char switch_B;
+  
+  unsigned char push_button;
+  
+  unsigned char light_A;
+  unsigned char light_B;
   
   unsigned long last_change;
   unsigned long interval;
 
-  unsigned int rot_knob_dir;
-  unsigned int rot_knob_state;
+  unsigned char rot_knob_dir;
+  unsigned char rot_knob_state;
 };
 
 #endif

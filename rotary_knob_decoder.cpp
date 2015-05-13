@@ -11,23 +11,65 @@
 
 
 #include <Arduino.h>
-#include "rotary_knob_decoder.h"
+#include <rotary_knob_decoder.h>
 
 RotaryKnobDecoder::RotaryKnobDecoder()
 {
-  this->switch_A = 2;
-  this->switch_B = 3;
+  this->switch_A = NOT_USED;
+  this->switch_B = NOT_USED;
 
+  this->push_button = NOT_USED;
+  
+  this->light_A = NOT_USED;
+  this->light_B = NOT_USED;
+  
   this->last_change = millis();
   
   this->rot_knob_dir   = NO_CHANGE;
   this->rot_knob_state = ROT_STATE_A;
 }
 
-RotaryKnobDecoder::RotaryKnobDecoder(int switch_A, int switch_B)
+RotaryKnobDecoder::RotaryKnobDecoder(unsigned char switch_A, unsigned char switch_B)
 {
+  pinMode(switch_A, INPUT_PULLUP);
+  pinMode(switch_B, INPUT_PULLUP);
+  
   this->switch_A = switch_A;
   this->switch_B = switch_B;
+  
+  this->push_button = NOT_USED;
+  
+  this->light_A = NOT_USED;
+  this->light_B = NOT_USED;
+  
+  this->last_change = millis();
+  
+  this->rot_knob_dir   = NO_CHANGE;
+  this->rot_knob_state = ROT_STATE_A;
+}
+
+RotaryKnobDecoder::RotaryKnobDecoder(unsigned char switch_A,
+                                     unsigned char switch_B,
+                                     unsigned char push_button,
+                                     unsigned char light_A,
+                                     unsigned char light_B)
+{
+  pinMode(switch_A, INPUT_PULLUP);
+  pinMode(switch_B, INPUT_PULLUP);
+  
+  pinMode(push_button, INPUT_PULLUP);
+  
+  pinMode(light_A, OUTPUT);
+  pinMode(light_B, OUTPUT);
+
+
+  this->switch_A = switch_A;
+  this->switch_B = switch_B;
+  
+  this->push_button = push_button;
+  
+  this->light_A = light_A;
+  this->light_B = light_B;
   
   this->last_change = millis();
   
@@ -40,7 +82,7 @@ RotaryKnobDecoder::RotaryKnobDecoder(int switch_A, int switch_B)
  * state machine.
  */
 
-int RotaryKnobDecoder::getState()
+unsigned char RotaryKnobDecoder::getState()
 {
   return rot_knob_state;  
 }
@@ -49,7 +91,7 @@ int RotaryKnobDecoder::getState()
  * being spun.
  */
 
-int RotaryKnobDecoder::getSpeed()
+unsigned char RotaryKnobDecoder::getSpeed()
 {
   float speed = 0;
   
@@ -60,7 +102,7 @@ int RotaryKnobDecoder::getSpeed()
     speed = constrain(speed, RPM_LOWER_LIMIT, RPM_UPPER_LIMIT);
   }
   
-  return (int)speed;  
+  return (unsigned char)speed;  
 }
 
 /* This implements a state machine to track the position of a
@@ -76,10 +118,10 @@ int RotaryKnobDecoder::getSpeed()
  * wise to call this function in a deterministic fashion.
  */
 
-int RotaryKnobDecoder::read()
+unsigned char RotaryKnobDecoder::read()
 {
 
-  int value;
+  unsigned char value;
   value = digitalRead(switch_A) | (digitalRead(switch_B) << 1);
 
   rot_knob_dir = NO_CHANGE;
@@ -161,4 +203,33 @@ int RotaryKnobDecoder::read()
   
   return rot_knob_dir;
   
+}
+
+
+unsigned char RotaryKnobDecoder::getButtonState()
+{
+  if (push_button != NOT_USED)
+  {
+    return digitalRead(push_button);
+  }
+  
+  return 0;
+  
+}
+
+
+void RotaryKnobDecoder::setLightA(unsigned char state)
+{
+  if (light_A != NOT_USED)
+  {
+    digitalWrite(light_A, state);
+  }
+}
+
+void RotaryKnobDecoder::setLightB(unsigned char state)
+{
+  if (light_A != NOT_USED)
+  {
+    digitalWrite(light_B, state);
+  }
 }
